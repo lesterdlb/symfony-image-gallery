@@ -1,0 +1,93 @@
+version: '3'
+
+services:
+    practica-final-mysql:
+        container_name: practica-final-mysql
+        image: mysql:5.7
+        environment:
+            MYSQL_DATABASE: 'db'
+            MYSQL_USER: 'user'
+            MYSQL_PASSWORD: 'password'
+            MYSQL_ROOT_PASSWORD: 'password'
+        ports:
+            - '3306:3306'
+        volumes:
+            - ./ops/mysql:/docker-entrypoint-initdb.d"
+            - ./var/mysql:/var/lib/mysql
+
+    practica-final-nginx:
+        container_name: practica-final-nginx
+        image: nginx:1.21
+        ports:
+            - '8080:80'
+        volumes:
+            - ./www/html:/code
+            - ./ops/nginx/default.conf:/etc/nginx/conf.d/default.conf
+        links: [practica-final-php]
+
+    practica-final-php:
+        container_name: practica-final-php
+        build:
+            context: ./ops/php-fpm
+            args:
+                UID: $U_ID
+        image: rendimiento-php:latest
+        volumes:
+            - ./www/html:/code
+
+    practica-final-redis:
+        container_name: practica-final-redis
+        image: redis:7.0.0
+        ports:
+            - '6379:6379'
+        volumes:
+            - ./ops/redis/redis.conf:/usr/local/etc/redis/redis.conf
+            - ./var/redis:/data
+        command: redis-server /usr/local/etc/redis/redis.conf
+
+    practica-final-rabbitmq:
+        container_name: practica-final-rabbitmq
+        image: rabbitmq:3.9.17-management
+        environment:
+            RABBITMQ_ERLANG_COOKIE: 'SWQOKODSQALRPCLNMEQG'
+            RABBITMQ_DEFAULT_USER: 'rabbitmq'
+            RABBITMQ_DEFAULT_PASS: 'rabbitmq'
+            RABBITMQ_DEFAULT_VHOST: '/'
+        volumes:
+            - ./var/rabbitmq/data/:/var/lib/rabbitmq/mnesia/
+        ports:
+            - '15672:15672'
+            - '5672:5672'
+
+    practica-final-blackfire:
+        container_name: practica-final-blackfire
+        image: blackfire/blackfire:2
+        ports: ['8307']
+        environment:
+            BLACKFIRE_CLIENT_ID: ${BLACKFIRE_CLIENT_ID}
+            BLACKFIRE_CLIENT_TOKEN: ${BLACKFIRE_CLIENT_TOKEN}
+            BLACKFIRE_SERVER_ID: ${BLACKFIRE_SERVER_ID}
+            BLACKFIRE_SERVER_TOKEN: ${BLACKFIRE_SERVER_TOKEN}
+
+    practica-final-elasticsearch:
+        container_name: practica-final-elasticsearch
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.16.0
+        user: root
+        environment:
+            - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
+            - 'TAKE_FILE_OWNERSHIP=1'
+        volumes:
+            - ./var/elasticsearch/data:/usr/share/elasticsearch/data
+            - ./ops/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+        ports:
+            - '9200:9200'
+
+    practica-final-kibana:
+        container_name: practica-final-kibana
+        image: docker.elastic.co/kibana/kibana:7.16.0
+        ports:
+            - '5601:5601'
+        environment:
+            ELASTICSEARCH_HOSTS: 'http://elasticsearch:9200'
+        depends_on:
+            - practica-final-elasticsearch

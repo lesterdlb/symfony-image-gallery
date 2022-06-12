@@ -33,7 +33,10 @@ build: ## Rebuilds all the containers
 	U_ID=${UID} docker-compose build
 
 php-container:
-	U_ID=${UID} docker exec -it --user ${UID} ${PHP} bash
+	U_ID=${UID} docker exec -it --user ${UID} -w /code/app/ ${PHP} bash
+
+uploads-permissions:
+	U_ID=${UID} docker exec -it --user ${UID} ${PHP} chmod o+rwx /code/app/public/uploads
 
 mysql-container:
 	U_ID=${UID} docker exec -it --user ${UID} ${MYSQL} mysql -u root -proot database -h localhost

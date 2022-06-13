@@ -23,10 +23,14 @@
 {% block body %}
     <section class="py-3 text-center container">
         <div class="row py-lg-3">
-            {{ form_start(imageForm) }}
-            {{ form_row(imageForm.imageFilename) }}
-            <button type="submit" class="btn btn-primary">Upload!</button>
-            {{ form_end(imageForm) }}
+{#            {{ form_start(searchForm) }}#}
+{#            {{ form_row(searchForm.query) }}#}
+{#            <button type="submit" class="btn btn-primary">Search!</button>#}
+{#            {{ form_end(searchForm) }}#}
+            {{ form_start(searchForm) }}
+            {{ form_widget(searchForm) }}
+            {{ form_end(searchForm) }}
+
         </div>
     </section>
 
@@ -39,14 +43,11 @@
                             <img src="{{ absolute_url('/uploads/') ~ image.imageFilename }}" alt=""/>
 
                             <div class="card-body">
-                                <p class="card-text">This is a wider card with supporting text below as a natural lead-in to
-                                    additional content. This content is a little bit longer.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                                    </div>
-                                    <small class="text-muted">9 mins</small>
+                                <p class="card-text">Description</p>
+                                <div class="d-flex justify-content-left align-items-center">
+                                    {% for tag in image.tags %}
+                                        <span class="badge bg-dark">{{ tag }}</span>
+                                    {% endfor %}
                                 </div>
                             </div>
                         </div>

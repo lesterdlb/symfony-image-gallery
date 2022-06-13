@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Image;
+namespace App\Application\Image\Command;
 
 use App\Domain\Image\Image;
 use App\Domain\Image\ImageRepositoryInterface;

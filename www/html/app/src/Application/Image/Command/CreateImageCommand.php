@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Image;
+namespace App\Application\Image\Command;
 
 class CreateImageCommand {
-    private string $id;
     private string $imageFilename;
     private \DateTimeInterface $createdAt;
     private \DateTimeInterface $updatedAt;
@@ -13,24 +12,17 @@ class CreateImageCommand {
     private string $description;
 
     public function __construct(
-        string $id,
         string $imageFilename,
         \DateTimeInterface $createdAt,
         \DateTimeInterface $updatedAt,
         array $tags,
         string $description
     ) {
-        $this->id = $id;
         $this->imageFilename = $imageFilename;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
         $this->tags = $tags;
         $this->description = $description;
-    }
-
-    public function Id()
-    {
-        return $this->id;
     }
 
     public function ImageFilename(): string

@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Infrastructure\Controller;
 
-use App\Application\Image\CreateImageCommand;
+use App\Application\Image\Command\CreateImageCommand;
+use App\Application\Image\Query\GetImagesQuery;
 use App\Infrastructure\Form\ImageFormType;
-use Ramsey\Uuid\Uuid;
+use App\Infrastructure\Form\SearchImageFormType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,49 +18,26 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class HomeController extends AbstractController
 {
-    private MessageBusInterface $bus;
+    private GetImagesQuery $getImagesQuery;
 
-    public function __construct(MessageBusInterface $bus)
+    public function __construct(MessageBusInterface $bus, GetImagesQuery $getImagesQuery)
     {
-        $this->bus = $bus;
+        $this->getImagesQuery = $getImagesQuery;
     }
 
     #[Route('/', name: 'app_home', methods: ['GET', 'POST'])]
     public function index(Request $request): Response
     {
-        $form = $this->createForm(ImageFormType::class);
+        $form = $this->createForm(SearchImageFormType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var UploadedFile $uploadedFile */
-            $uploadedFile = $form['imageFilename']->getData();
-            $destination  = $this->getParameter('kernel.project_dir') . '/public/uploads';
-
-            $originalFilename = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
-            $newFilename      = $originalFilename . '-' . uniqid() . '.' . $uploadedFile->guessExtension();
-
-            $uploadedFile->move(
-                $destination,
-                $newFilename
-            );
-
-            $this->bus->dispatch(
-                new CreateImageCommand(
-                    Uuid::getFactory()->uuid4()->toString(),
-                    $newFilename,
-                    new \DateTime(),
-                    new \DateTime(),
-                    ['A', 'B'],
-                    'Image'
-                )
-            );
-
             return $this->redirectToRoute('app_home', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('home/index.html.twig', [
-            'images'    => [],
-            'imageForm' => $form->createView(),
+        return $this->render('images/index.html.twig', [
+            'images'    => $this->getImagesQuery->getAll(),
+            'searchForm' => $form->createView(),
         ]);
     }
 }

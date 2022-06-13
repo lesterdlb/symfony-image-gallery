@@ -18,6 +18,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class UploadImageController extends AbstractController
 {
     private MessageBusInterface $bus;
+    private const UPLOAD_DIR = '/public/uploads';
 
     public function __construct(MessageBusInterface $bus)
     {
@@ -31,9 +32,11 @@ class UploadImageController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $formData = $form->getData();
+
             /** @var UploadedFile $uploadedFile */
-            $uploadedFile = $form['imageFilename']->getData();
-            $destination  = $this->getParameter('kernel.project_dir') . '/public/uploads';
+            $uploadedFile = $formData['imageFilename'];
+            $destination  = $this->getParameter('kernel.project_dir') . self::UPLOAD_DIR;
 
             $originalFilename = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
             $newFilename      = $originalFilename . '-' . uniqid() . '.' . $uploadedFile->guessExtension();
@@ -48,19 +51,19 @@ class UploadImageController extends AbstractController
                     $newFilename,
                     new \DateTime(),
                     new \DateTime(),
-                    ['A', 'B'],
-                    'Image'
+                    explode(',', $formData['tags']),
+                    $formData['description']
                 )
             );
 
-            $this->addFlash('info', 'Image Uploaded');
+            $this->addFlash('info', 'Image uploaded successfully!');
 
             return $this->redirectToRoute('app_home', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('images/upload.html.twig', [
-            'images'    => [],
-            'imageForm' => $form->createView(),
+            'imageTransformations'    => [],
+            'uploadForm' => $form->createView(),
         ]);
     }
 }

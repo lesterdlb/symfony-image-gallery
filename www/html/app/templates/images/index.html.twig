@@ -1,36 +1,16 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello HomeController!{% endblock %}
+{% block title %}Home{% endblock %}
 
 {% block stylesheets %}
-    <style>
-        .bd-placeholder-img {
-            font-size: 1.125rem;
-            text-anchor: middle;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            user-select: none;
-        }
-
-        @media (min-width: 768px) {
-            .bd-placeholder-img-lg {
-                font-size: 3.5rem;
-            }
-        }
-    </style>
 {% endblock %}
 
 {% block body %}
     <section class="py-3 text-center container">
         <div class="row py-lg-3">
-{#            {{ form_start(searchForm) }}#}
-{#            {{ form_row(searchForm.query) }}#}
-{#            <button type="submit" class="btn btn-primary">Search!</button>#}
-{#            {{ form_end(searchForm) }}#}
             {{ form_start(searchForm) }}
             {{ form_widget(searchForm) }}
             {{ form_end(searchForm) }}
-
         </div>
     </section>
 
@@ -41,7 +21,6 @@
                     <div class="col">
                         <div class="card shadow-sm">
                             <img src="{{ absolute_url('/uploads/') ~ image.imageFilename }}" alt=""/>
-
                             <div class="card-body">
                                 <p class="card-text">Description</p>
                                 <div class="d-flex justify-content-left align-items-center">

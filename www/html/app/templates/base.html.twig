@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" class="h-100">
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Welcome!{% endblock %}</title>
@@ -24,7 +24,7 @@
     {% block javascripts %}
     {% endblock %}
 </head>
-<body>
+<body class="d-flex flex-column h-100">
 <header>
     <div class="navbar navbar-dark bg-dark shadow-sm">
         <div class="container">
@@ -38,23 +38,30 @@
                 <strong>Instagram Clone</strong>
             </a>
             <ul class="nav">
-                <li class="nav-item"><a href="{{ path('app_home') }}" class="nav-link text-white">Home</a></li>
-                <li class="nav-item"><a href="{{ path('app_upload_image') }}" class="nav-link text-white">Upload Image</a></li>
+                <li class="nav-item">
+                    <a href="{{ path('app_home') }}" class="nav-link text-white">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ path('app_upload_image') }}" class="nav-link text-white">Upload Image</a>
+                </li>
             </ul>
         </div>
     </div>
 </header>
+<div class="container">
+    {% for message in app.flashes('info') %}
+        <div class="alert alert-success alert-dismissible fade show mt-2" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+</div>
 <main>
     {% block body %}{% endblock %}
 </main>
-<footer class="text-muted py-5">
+<footer class="footer mt-auto py-3 bg-light">
     <div class="container">
-        <p class="float-end mb-1">
-            <a href="#">Back to top</a>
-        </p>
-        <p class="mb-1">Album example is &copy; Bootstrap, but please download and customize it for yourself!</p>
-        <p class="mb-0">New to Bootstrap? <a href="/">Visit the homepage</a> or read our <a
-                    href="/docs/5.0/getting-started/introduction/">getting started guide</a>.</p>
+        <span class="text-muted">Instagram Clone {{ 'now' | date('Y') }}</span>
     </div>
 </footer>
 

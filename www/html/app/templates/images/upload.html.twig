@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Upload Image{% endblock %}
+
+{% block stylesheets %}
+{% endblock %}
+
+{% block body %}
+    <section class="py-3 text-center container">
+        <div class="row py-lg-3">
+            {{ form_start(uploadForm) }}
+            {{ form_widget(uploadForm) }}
+            {{ form_end(uploadForm) }}
+        </div>
+    </section>
+{% endblock %}

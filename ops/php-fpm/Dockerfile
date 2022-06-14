@@ -19,6 +19,16 @@ RUN pecl install -o -f redis \
     && curl -sS https://getcomposer.org/installer -o composer-setup.php \
     && php composer-setup.php --install-dir=/usr/bin --filename=composer
 
+RUN apt-get update \
+    && apt-get install -y \
+        librabbitmq-dev \
+        libssh-dev \
+    && docker-php-ext-install \
+        bcmath \
+        sockets \
+    && pecl install amqp \
+    && docker-php-ext-enable amqp
+
 RUN version=$(php -r "echo PHP_MAJOR_VERSION.PHP_MINOR_VERSION;") \
     && architecture=$(uname -m) \
     && curl -A "Docker" -o /tmp/blackfire-probe.tar.gz -D - -L -s https://blackfire.io/api/v1/releases/probe/php/linux/$architecture/$version \

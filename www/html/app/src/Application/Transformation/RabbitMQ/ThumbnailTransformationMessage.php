@@ -5,19 +5,19 @@ declare(strict_types=1);
 namespace App\Application\Transformation\RabbitMQ;
 
 use App\Domain\QueueMessage;
+use Ramsey\Uuid\UuidInterface;
 
-final class ImageTransformationMessage implements QueueMessage
+final class ThumbnailTransformationMessage implements QueueMessage
 {
     public function __construct(
-        private readonly string $imageId,
+        private readonly UuidInterface $imageId,
         private readonly string $imageFilename,
         private readonly array $tags,
         private readonly string $description,
-        private readonly string $transformationType
     ) {
     }
 
-    public function ImageId(): string
+    public function ImageId(): UuidInterface
     {
         return $this->imageId;
     }
@@ -35,10 +35,5 @@ final class ImageTransformationMessage implements QueueMessage
     public function Description(): string
     {
         return $this->description;
-    }
-
-    public function TransformationType(): string
-    {
-        return $this->transformationType;
     }
 }

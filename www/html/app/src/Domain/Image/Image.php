@@ -5,14 +5,11 @@ namespace App\Domain\Image;
 use App\Domain\AggregateRoot;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
-use Ramsey\Uuid\Doctrine\UuidGenerator;
 
 #[ORM\Entity]
 final class Image extends AggregateRoot
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     #[ORM\Column(type: 'uuid', unique: true)]
     private UuidInterface $id;
 
@@ -27,13 +24,25 @@ final class Image extends AggregateRoot
     }
 
     public static function create(
+        UuidInterface $id,
         string $description,
         array $tags,
+        string $imageFilename
     ): self {
         $image = new self();
 
-        $image->description   = $description;
-        $image->tags          = $tags;
+        $image->id          = $id;
+        $image->description = $description;
+        $image->tags        = $tags;
+
+        $image->record(
+            new ImageCreatedDomainEvent(
+                $id,
+                $description,
+                $tags,
+                $imageFilename
+            )
+        );
 
         return $image;
     }

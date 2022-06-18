@@ -6,7 +6,7 @@ namespace App\Application\Image\Command;
 
 use App\Domain\Image\Image;
 use App\Domain\Image\ImageRepositoryInterface;
-use App\Application\Image\RabbitMQ\ImageTransformationMessage;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
@@ -26,10 +26,14 @@ class CreateImageCommandHandler implements MessageHandlerInterface
     public function __invoke(CreateImageCommand $command): void
     {
         $image = Image::create(
+            Uuid::uuid4(),
             $command->Description(),
             $command->Tags(),
+            $command->ImageFilename()
         );
 
         $this->imageRepository->save($image);
+
+        $this->messageBus->dispatch(...$image->pullDomainEvents());
     }
 }

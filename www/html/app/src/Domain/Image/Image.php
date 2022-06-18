@@ -53,7 +53,7 @@ final class Image
         return $image;
     }
 
-    public function Id(): Uuid
+    public function Id(): UuidInterface
     {
         return $this->id;
     }

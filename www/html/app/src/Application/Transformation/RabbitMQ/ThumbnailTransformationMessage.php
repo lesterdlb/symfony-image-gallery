@@ -2,15 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Image\RabbitMQ;
+namespace App\Application\Transformation\RabbitMQ;
 
-final class ImageTransformationMessage
+use App\Domain\QueueMessage;
+
+final class ImageTransformationMessage implements QueueMessage
 {
     public function __construct(
         private readonly string $imageId,
         private readonly string $imageFilename,
         private readonly array $tags,
-        private readonly string $description
+        private readonly string $description,
+        private readonly string $transformationType
     ) {
     }
 
@@ -32,5 +35,10 @@ final class ImageTransformationMessage
     public function Description(): string
     {
         return $this->description;
+    }
+
+    public function TransformationType(): string
+    {
+        return $this->transformationType;
     }
 }

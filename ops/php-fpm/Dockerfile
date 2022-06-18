@@ -23,11 +23,14 @@ RUN apt-get update \
     && apt-get install -y \
         librabbitmq-dev \
         libssh-dev \
+        libmagickwand-dev --no-install-recommends \
     && docker-php-ext-install \
         bcmath \
         sockets \
     && pecl install amqp \
-    && docker-php-ext-enable amqp
+    && pecl install imagick \
+    && docker-php-ext-enable amqp \
+    && docker-php-ext-enable imagick
 
 RUN version=$(php -r "echo PHP_MAJOR_VERSION.PHP_MINOR_VERSION;") \
     && architecture=$(uname -m) \

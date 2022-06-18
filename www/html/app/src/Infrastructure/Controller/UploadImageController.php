@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace App\Infrastructure\Controller;
 
 use App\Application\Image\Command\CreateImageCommand;
-use App\Application\Image\Query\GetImagesQuery;
 use App\Infrastructure\Form\UploadImageFormType;
-use Ramsey\Uuid\Uuid;
+use App\Infrastructure\Service\UploadImageService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -18,11 +16,14 @@ use Symfony\Component\Routing\Annotation\Route;
 class UploadImageController extends AbstractController
 {
     private MessageBusInterface $bus;
-    private const UPLOAD_DIR = '/public/uploads';
+    private UploadImageService $uploadImageService;
 
-    public function __construct(MessageBusInterface $bus)
-    {
-        $this->bus = $bus;
+    public function __construct(
+        MessageBusInterface $bus,
+        UploadImageService $uploadImageService,
+    ) {
+        $this->bus                = $bus;
+        $this->uploadImageService = $uploadImageService;
     }
 
     #[Route('/upload', name: 'app_upload_image', methods: ['GET', 'POST'])]
@@ -34,23 +35,11 @@ class UploadImageController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $formData = $form->getData();
 
-            /** @var UploadedFile $uploadedFile */
-            $uploadedFile = $formData['imageFilename'];
-            $destination  = $this->getParameter('kernel.project_dir') . self::UPLOAD_DIR;
-
-            $originalFilename = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
-            $newFilename      = $originalFilename . '-' . uniqid() . '.' . $uploadedFile->guessExtension();
-
-            $uploadedFile->move(
-                $destination,
-                $newFilename
-            );
+            $newFilename = $this->uploadImageService->uploadImage($formData['imageFilename']);
 
             $this->bus->dispatch(
                 new CreateImageCommand(
                     $newFilename,
-                    new \DateTime(),
-                    new \DateTime(),
                     explode(',', $formData['tags']),
                     $formData['description']
                 )
@@ -62,8 +51,8 @@ class UploadImageController extends AbstractController
         }
 
         return $this->render('images/upload.html.twig', [
-            'imageTransformations'    => [],
-            'uploadForm' => $form->createView(),
+            'imageTransformations' => [],
+            'uploadForm'           => $form->createView(),
         ]);
     }
 }

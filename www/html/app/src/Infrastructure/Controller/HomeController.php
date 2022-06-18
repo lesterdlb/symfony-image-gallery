@@ -4,25 +4,22 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Controller;
 
-use App\Application\Image\Command\CreateImageCommand;
-use App\Application\Image\Query\GetImagesQuery;
-use App\Infrastructure\Form\ImageFormType;
+use App\Application\Transformation\Query\GetTransformationsQuery;
 use App\Infrastructure\Form\SearchImageFormType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
-
 class HomeController extends AbstractController
 {
-    private GetImagesQuery $getImagesQuery;
+    private GetTransformationsQuery $getTransformationsQuery;
 
-    public function __construct(MessageBusInterface $bus, GetImagesQuery $getImagesQuery)
-    {
-        $this->getImagesQuery = $getImagesQuery;
+    public function __construct(
+        GetTransformationsQuery $getTransformationsQuery,
+    ) {
+        $this->getTransformationsQuery = $getTransformationsQuery;
     }
 
     #[Route('/', name: 'app_home', methods: ['GET', 'POST'])]
@@ -36,7 +33,7 @@ class HomeController extends AbstractController
         }
 
         return $this->render('images/index.html.twig', [
-            'images'    => $this->getImagesQuery->getAll(),
+            'transformations'     => $this->getTransformationsQuery->getAll(),
             'searchForm' => $form->createView(),
         ]);
     }

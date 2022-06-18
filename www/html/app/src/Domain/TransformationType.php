@@ -6,7 +6,7 @@ namespace App\Domain;
 
 enum TransformationType
 {
-    case BASE;
+    case ORIGINAL;
     case THUMBNAIL;
     case GRAYSCALE;
     case SEPIA;

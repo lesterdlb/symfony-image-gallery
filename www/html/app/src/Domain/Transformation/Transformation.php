@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Transformation;
 
+use App\Application\Transformation\RabbitMQ\ThumbnailTransformationMessage;
 use App\Domain\AggregateRoot;
+use App\Domain\TransformationType;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
@@ -13,8 +15,6 @@ use Ramsey\Uuid\Doctrine\UuidGenerator;
 final class Transformation extends AggregateRoot
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     #[ORM\Column(type: 'uuid', unique: true)]
     private UuidInterface $id;
 
@@ -35,16 +35,18 @@ final class Transformation extends AggregateRoot
     }
 
     public static function create(
+        UuidInterface $id,
         string $imageFilename,
-        string $transformationType,
+        TransformationType $transformationType,
         UuidInterface $imageId
     ): self {
         $transformation = new self();
 
+        $transformation->id = $id;
         $transformation->imageFilename      = $imageFilename;
-        $transformation->transformationType = $transformationType;
-        $transformation->imageId = $imageId;
-        $transformation->createdAt = new \DateTime();
+        $transformation->transformationType = $transformationType->name;
+        $transformation->imageId            = $imageId;
+        $transformation->createdAt          = new \DateTime();
 
         return $transformation;
     }

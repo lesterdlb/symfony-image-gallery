@@ -26,22 +26,10 @@ class CreateImageCommandHandler implements MessageHandlerInterface
     public function __invoke(CreateImageCommand $command): void
     {
         $image = Image::create(
-            $command->ImageFilename(),
-            $command->CreatedAt(),
-            $command->UpdatedAt(),
+            $command->Description(),
             $command->Tags(),
-            $command->Description()
         );
 
         $this->imageRepository->save($image);
-
-        $this->messageBus->dispatch(
-            new ImageTransformationMessage(
-                (string)$image->Id(),
-                $image->ImageFilename(),
-                $image->Tags(),
-                $image->Description()
-            )
-        );
     }
 }

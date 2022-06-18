@@ -18,6 +18,12 @@ doctrine:
                 prefix: 'App\Domain'
                 alias: App
 
+        metadata_cache_driver: ~
+
+        result_cache_driver:
+            type: pool
+            pool: doctrine.result_cache_pool
+
 when@test:
     doctrine:
         dbal:

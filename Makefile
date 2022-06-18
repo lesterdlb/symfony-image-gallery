@@ -5,6 +5,7 @@ UID = $(shell id -u)
 PHP = practica-final-php
 NGINX = practica-final-nginx
 MYSQL = practica-final-mysql
+REDIS = practica-final-redis
 
 help: ## Show this help message
 	@echo 'usage: make [target]'
@@ -43,3 +44,6 @@ mysql-container:
 
 nginx-container:
 	U_ID=${UID} docker exec -it --user ${UID} ${NGINX} /bin/bash
+
+redis-container:
+	U_ID=${UID} docker exec -it --user ${UID} ${REDIS} redis-cli

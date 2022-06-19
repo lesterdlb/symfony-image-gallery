@@ -10,6 +10,11 @@ use Psr\Log\LoggerInterface;
 
 final class ImageTransformationService implements ImageTransformationInterface
 {
+    private const THUMBNAIL = '_thumbnail.jpg';
+    private const GRAYSCALE = '_grayscale.jpg';
+    private const NEGATE = '_negate.jpg';
+    private const SEPIA = '_sepia.jpg';
+
     private string $uploadFolderPath;
     private LoggerInterface $logger;
 
@@ -17,8 +22,8 @@ final class ImageTransformationService implements ImageTransformationInterface
         string $uploadFolderPath,
         LoggerInterface $logger
     ) {
-        $this->uploadFolderPath   = $uploadFolderPath;
-        $this->logger             = $logger;
+        $this->uploadFolderPath = $uploadFolderPath;
+        $this->logger           = $logger;
     }
 
     public function createThumbnail(
@@ -27,8 +32,8 @@ final class ImageTransformationService implements ImageTransformationInterface
         int $height,
         int $quality = 90
     ): string|false {
-        try {
-            if (file_exists($this->uploadFolderPath . $imageFilename)) {
+        if (file_exists($this->uploadFolderPath . $imageFilename)) {
+            try {
                 $imagick = new Imagick($this->uploadFolderPath . $imageFilename);
 
                 $imagick->setImageFormat('jpeg');
@@ -37,16 +42,77 @@ final class ImageTransformationService implements ImageTransformationInterface
 
                 $imagick->thumbnailImage($width, $height, true, false);
 
-                $newFilename = explode('.', $imageFilename)[0] . '_thumb' . '.jpg';
+                $newFilename = explode('.', $imageFilename)[0] . self::THUMBNAIL;
 
                 if (file_put_contents($this->uploadFolderPath . $newFilename, $imagick)) {
                     return $newFilename;
                 }
-
-                return false;
+            } catch (\ImagickException $ex) {
+                $this->logger->error('ImagickException', ['ex' => $ex->getMessage()]);
             }
-        } catch (\ImagickException $ex) {
-            $this->logger->error('ImagickException', ['ex' => $ex->getMessage()]);
+        }
+
+        return false;
+    }
+
+    public function createGrayscaleImage(string $imageFilename): string|false
+    {
+        if (file_exists($this->uploadFolderPath . $imageFilename)) {
+            try {
+                $imagick = new Imagick($this->uploadFolderPath . $imageFilename);
+
+                $imagick->setImageType(Imagick::IMGTYPE_GRAYSCALE);
+
+                $newFilename = explode('.', $imageFilename)[0] . self::GRAYSCALE;
+
+                if (file_put_contents($this->uploadFolderPath . $newFilename, $imagick)) {
+                    return $newFilename;
+                }
+            } catch (\ImagickException $ex) {
+                $this->logger->error('ImagickException', ['ex' => $ex->getMessage()]);
+            }
+        }
+
+        return false;
+    }
+
+    public function createNegateImage(string $imageFilename): string|false
+    {
+        if (file_exists($this->uploadFolderPath . $imageFilename)) {
+            try {
+                $imagick = new Imagick($this->uploadFolderPath . $imageFilename);
+
+                $imagick->negateImage(false);
+
+                $newFilename = explode('.', $imageFilename)[0] . self::NEGATE;
+
+                if (file_put_contents($this->uploadFolderPath . $newFilename, $imagick)) {
+                    return $newFilename;
+                }
+            } catch (\ImagickException $ex) {
+                $this->logger->error('ImagickException', ['ex' => $ex->getMessage()]);
+            }
+        }
+
+        return false;
+    }
+
+    public function createSepiaImage(string $imageFilename): string|false
+    {
+        if (file_exists($this->uploadFolderPath . $imageFilename)) {
+            try {
+                $imagick = new Imagick($this->uploadFolderPath . $imageFilename);
+
+                $imagick->sepiaToneImage(90);
+
+                $newFilename = explode('.', $imageFilename)[0] . self::SEPIA;
+
+                if (file_put_contents($this->uploadFolderPath . $newFilename, $imagick)) {
+                    return $newFilename;
+                }
+            } catch (\ImagickException $ex) {
+                $this->logger->error('ImagickException', ['ex' => $ex->getMessage()]);
+            }
         }
 
         return false;

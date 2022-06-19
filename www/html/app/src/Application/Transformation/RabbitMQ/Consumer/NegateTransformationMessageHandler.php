@@ -8,6 +8,7 @@ use App\Application\Transformation\RabbitMQ\Message\GrayscaleTransformationMessa
 use App\Application\Transformation\RabbitMQ\Message\NegateTransformationMessage;
 use App\Application\Transformation\RabbitMQ\Message\SepiaTransformationMessage;
 use App\Application\Transformation\RabbitMQ\Message\ThumbnailTransformationMessage;
+use App\Domain\ImageTransformationInterface;
 use App\Domain\Transformation\Transformation;
 use App\Domain\Transformation\TransformationRepositoryInterface;
 use App\Domain\TransformationType;
@@ -19,21 +20,31 @@ use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 final class NegateTransformationMessageHandler implements MessageHandlerInterface
 {
     private TransformationRepositoryInterface $transformationRepository;
-    private UploadImageService $uploadImageService;
-    private string $uploadFolderPath;
+    private ImageTransformationInterface $imageTransformation;
 
     public function __construct(
         TransformationRepositoryInterface $transformationRepository,
-        UploadImageService $uploadImageService,
-        string $uploadFolderPath
+        ImageTransformationInterface $imageTransformation
     ) {
         $this->transformationRepository = $transformationRepository;
-        $this->uploadImageService       = $uploadImageService;
-        $this->uploadFolderPath         = $uploadFolderPath;
+        $this->imageTransformation      = $imageTransformation;
     }
 
     public function __invoke(NegateTransformationMessage $message)
     {
+        $filename = $this->imageTransformation
+            ->createNegateImage(
+                $message->ImageFilename()
+            );
+
+        $transformation = Transformation::create(
+            Uuid::uuid4(),
+            $filename,
+            TransformationType::NEGATE,
+            $message->ImageId()
+        );
+
+        $this->transformationRepository->save($transformation);
         print_r('Negate message handled!' . PHP_EOL);
     }
 }

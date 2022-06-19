@@ -14,4 +14,7 @@ framework:
 
         routing:
             # Route your messages to the transports
-            'App\Application\Transformation\RabbitMQ\ThumbnailTransformationMessage': async
+            'App\Application\Transformation\RabbitMQ\Message\ThumbnailTransformationMessage': async
+            'App\Application\Transformation\RabbitMQ\Message\GrayscaleTransformationMessage': async
+            'App\Application\Transformation\RabbitMQ\Message\SepiaTransformationMessage': async
+            'App\Application\Transformation\RabbitMQ\Message\NegateTransformationMessage': async

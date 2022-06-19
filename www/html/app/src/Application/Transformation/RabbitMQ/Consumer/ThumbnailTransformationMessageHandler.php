@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Transformation\RabbitMQ\Consumer;
 
-use App\Application\Transformation\RabbitMQ\ThumbnailTransformationMessage;
+use App\Application\Transformation\RabbitMQ\Message\ThumbnailTransformationMessage;
 use App\Domain\Transformation\Transformation;
 use App\Domain\Transformation\TransformationRepositoryInterface;
 use App\Domain\TransformationType;

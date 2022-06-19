@@ -49,7 +49,7 @@ class TransformationRepository implements TransformationRepositoryInterface
         $queryBuilder = $this->repository
             ->createQueryBuilder('T')
             ->where('T.transformationType = :type')
-            ->setParameter(':type', TransformationType::THUMBNAIL->name);
+            ->setParameter(':type', TransformationType::ORIGINAL->name);
 
         $query = $queryBuilder->getQuery()->enableResultCache();
 

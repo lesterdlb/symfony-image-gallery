@@ -2,14 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Transformation\RabbitMQ;
+namespace App\Application\Transformation\RabbitMQ\Message;
 
-use App\Domain\QueueMessage;
 use Ramsey\Uuid\UuidInterface;
 
-final class ThumbnailTransformationMessage implements QueueMessage
+abstract class BaseMessage
 {
-    public function __construct(
+     function __construct(
         private readonly UuidInterface $imageId,
         private readonly string $imageFilename,
         private readonly array $tags,

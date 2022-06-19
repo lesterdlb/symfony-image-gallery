@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Application\Transformation\Event;
 
-use App\Application\Transformation\RabbitMQ\ThumbnailTransformationMessage;
+use App\Application\Transformation\RabbitMQ\Message\GrayscaleTransformationMessage;
+use App\Application\Transformation\RabbitMQ\Message\NegateTransformationMessage;
+use App\Application\Transformation\RabbitMQ\Message\SepiaTransformationMessage;
+use App\Application\Transformation\RabbitMQ\Message\ThumbnailTransformationMessage;
 use App\Domain\Image\ImageCreatedDomainEvent;
 use App\Domain\Transformation\Transformation;
 use App\Domain\Transformation\TransformationRepositoryInterface;
@@ -37,14 +40,25 @@ class ImageCreatedDomainEventHandler implements MessageHandlerInterface
 
         $this->transformationRepository->save($baseImage);
 
-        // Create Thumbnail
+        $params = [
+            $event->ImageId(),
+            $event->ImageFilename(),
+            $event->Tags(),
+            $event->Description()
+        ];
+
+        // Transformations
         $this->messageBus->dispatch(
-            new ThumbnailTransformationMessage(
-                $event->ImageId(),
-                $event->ImageFilename(),
-                $event->Tags(),
-                $event->Description()
-            )
+            new ThumbnailTransformationMessage(...$params)
+        );
+        $this->messageBus->dispatch(
+            new GrayscaleTransformationMessage(...$params)
+        );
+        $this->messageBus->dispatch(
+            new SepiaTransformationMessage(...$params)
+        );
+        $this->messageBus->dispatch(
+            new NegateTransformationMessage(...$params)
         );
     }
 }

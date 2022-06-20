@@ -36,6 +36,9 @@ build: ## Rebuilds all the containers
 php-container:
 	U_ID=${UID} docker exec -it --user ${UID} -w /code/app/ ${PHP} bash
 
+start-messenger-consumer:
+	U_ID=${UID} docker exec -it --user ${UID} -w /code/app/ ${PHP} php bin/console messenger:consume async
+
 uploads-permissions:
 	U_ID=${UID} docker exec -it --user ${UID} ${PHP} chmod o+rwx /code/app/public/uploads
 

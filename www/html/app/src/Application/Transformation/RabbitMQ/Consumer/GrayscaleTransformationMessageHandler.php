@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Transformation\RabbitMQ\Consumer;
 
 use App\Application\Transformation\RabbitMQ\Message\GrayscaleTransformationMessage;
+use App\Domain\ElasticsearchInterface;
 use App\Domain\ImageTransformationInterface;
 use App\Domain\Transformation\Transformation;
 use App\Domain\Transformation\TransformationRepositoryInterface;
@@ -16,13 +17,16 @@ final class GrayscaleTransformationMessageHandler implements MessageHandlerInter
 {
     private TransformationRepositoryInterface $transformationRepository;
     private ImageTransformationInterface $imageTransformation;
+    private ElasticsearchInterface $elasticsearch;
 
     public function __construct(
         TransformationRepositoryInterface $transformationRepository,
-        ImageTransformationInterface $imageTransformation
+        ImageTransformationInterface $imageTransformation,
+        ElasticsearchInterface $elasticsearch
     ) {
         $this->transformationRepository = $transformationRepository;
         $this->imageTransformation      = $imageTransformation;
+        $this->elasticsearch            = $elasticsearch;
     }
 
     public function __invoke(GrayscaleTransformationMessage $message)
@@ -40,6 +44,12 @@ final class GrayscaleTransformationMessageHandler implements MessageHandlerInter
         );
 
         $this->transformationRepository->save($transformation);
+        $this->elasticsearch->add(
+            (string)$transformation->Id(),
+            $message->Description(),
+            [...$message->Tags(), TransformationType::GRAYSCALE->name]
+        );
+
         print_r('Grayscale message handled!' . PHP_EOL);
     }
 }

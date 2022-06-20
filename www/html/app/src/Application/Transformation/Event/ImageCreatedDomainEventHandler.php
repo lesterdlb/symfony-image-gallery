@@ -8,6 +8,7 @@ use App\Application\Transformation\RabbitMQ\Message\GrayscaleTransformationMessa
 use App\Application\Transformation\RabbitMQ\Message\NegateTransformationMessage;
 use App\Application\Transformation\RabbitMQ\Message\SepiaTransformationMessage;
 use App\Application\Transformation\RabbitMQ\Message\ThumbnailTransformationMessage;
+use App\Domain\ElasticsearchInterface;
 use App\Domain\Image\ImageCreatedDomainEvent;
 use App\Domain\Transformation\Transformation;
 use App\Domain\Transformation\TransformationRepositoryInterface;
@@ -20,13 +21,16 @@ class ImageCreatedDomainEventHandler implements MessageHandlerInterface
 {
     private readonly TransformationRepositoryInterface $transformationRepository;
     private readonly MessageBusInterface $messageBus;
+    private ElasticsearchInterface $elasticsearch;
 
     public function __construct(
         TransformationRepositoryInterface $transformationRepository,
-        MessageBusInterface $messageBus
+        MessageBusInterface $messageBus,
+        ElasticsearchInterface $elasticsearch
     ) {
         $this->transformationRepository = $transformationRepository;
         $this->messageBus               = $messageBus;
+        $this->elasticsearch            = $elasticsearch;
     }
 
     public function __invoke(ImageCreatedDomainEvent $event): void
@@ -39,6 +43,11 @@ class ImageCreatedDomainEventHandler implements MessageHandlerInterface
         );
 
         $this->transformationRepository->save($baseImage);
+        $this->elasticsearch->add(
+            (string)$baseImage->Id(),
+            $event->Description(),
+            $event->Tags()
+        );
 
         $params = [
             $event->ImageId(),

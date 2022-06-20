@@ -7,6 +7,7 @@ namespace App\Application\Transformation\RabbitMQ\Consumer;
 use App\Application\Transformation\RabbitMQ\Message\GrayscaleTransformationMessage;
 use App\Application\Transformation\RabbitMQ\Message\SepiaTransformationMessage;
 use App\Application\Transformation\RabbitMQ\Message\ThumbnailTransformationMessage;
+use App\Domain\ElasticsearchInterface;
 use App\Domain\ImageTransformationInterface;
 use App\Domain\Transformation\Transformation;
 use App\Domain\Transformation\TransformationRepositoryInterface;
@@ -20,13 +21,16 @@ final class SepiaTransformationMessageHandler implements MessageHandlerInterface
 {
     private TransformationRepositoryInterface $transformationRepository;
     private ImageTransformationInterface $imageTransformation;
+    private ElasticsearchInterface $elasticsearch;
 
     public function __construct(
         TransformationRepositoryInterface $transformationRepository,
-        ImageTransformationInterface $imageTransformation
+        ImageTransformationInterface $imageTransformation,
+        ElasticsearchInterface $elasticsearch
     ) {
         $this->transformationRepository = $transformationRepository;
         $this->imageTransformation      = $imageTransformation;
+        $this->elasticsearch            = $elasticsearch;
     }
 
     public function __invoke(SepiaTransformationMessage $message)
@@ -44,6 +48,12 @@ final class SepiaTransformationMessageHandler implements MessageHandlerInterface
         );
 
         $this->transformationRepository->save($transformation);
+        $this->elasticsearch->add(
+            (string)$transformation->Id(),
+            $message->Description(),
+            [...$message->Tags(), TransformationType::SEPIA->name]
+        );
+
         print_r('Sepia message handled!' . PHP_EOL);
     }
 }

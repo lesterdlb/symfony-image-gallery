@@ -8,6 +8,7 @@ use App\Application\Transformation\RabbitMQ\Message\GrayscaleTransformationMessa
 use App\Application\Transformation\RabbitMQ\Message\NegateTransformationMessage;
 use App\Application\Transformation\RabbitMQ\Message\SepiaTransformationMessage;
 use App\Application\Transformation\RabbitMQ\Message\ThumbnailTransformationMessage;
+use App\Domain\ElasticsearchInterface;
 use App\Domain\ImageTransformationInterface;
 use App\Domain\Transformation\Transformation;
 use App\Domain\Transformation\TransformationRepositoryInterface;
@@ -21,13 +22,16 @@ final class NegateTransformationMessageHandler implements MessageHandlerInterfac
 {
     private TransformationRepositoryInterface $transformationRepository;
     private ImageTransformationInterface $imageTransformation;
+    private ElasticsearchInterface $elasticsearch;
 
     public function __construct(
         TransformationRepositoryInterface $transformationRepository,
-        ImageTransformationInterface $imageTransformation
+        ImageTransformationInterface $imageTransformation,
+        ElasticsearchInterface $elasticsearch
     ) {
         $this->transformationRepository = $transformationRepository;
         $this->imageTransformation      = $imageTransformation;
+        $this->elasticsearch            = $elasticsearch;
     }
 
     public function __invoke(NegateTransformationMessage $message)
@@ -45,6 +49,12 @@ final class NegateTransformationMessageHandler implements MessageHandlerInterfac
         );
 
         $this->transformationRepository->save($transformation);
+        $this->elasticsearch->add(
+            (string)$transformation->Id(),
+            $message->Description(),
+            [...$message->Tags(), TransformationType::NEGATE->name]
+        );
+
         print_r('Negate message handled!' . PHP_EOL);
     }
 }

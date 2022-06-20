@@ -13,4 +13,6 @@ interface TransformationRepositoryInterface
     public function getById(Uuid $transformationId): Transformation;
 
     public function findAll(): array;
+
+    public function search(array $filter): array;
 }

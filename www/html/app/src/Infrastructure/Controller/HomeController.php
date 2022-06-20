@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Controller;
 
 use App\Application\Transformation\Query\GetTransformationsQuery;
+use App\Application\Transformation\Query\SearchTransformationsQuery;
 use App\Infrastructure\Form\SearchImageFormType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,11 +16,14 @@ use Symfony\Component\Routing\Annotation\Route;
 class HomeController extends AbstractController
 {
     private GetTransformationsQuery $getTransformationsQuery;
+    private SearchTransformationsQuery $searchTransformationsQuery;
 
     public function __construct(
         GetTransformationsQuery $getTransformationsQuery,
+        SearchTransformationsQuery $searchTransformationsQuery
     ) {
-        $this->getTransformationsQuery = $getTransformationsQuery;
+        $this->getTransformationsQuery    = $getTransformationsQuery;
+        $this->searchTransformationsQuery = $searchTransformationsQuery;
     }
 
     #[Route('/', name: 'app_home', methods: ['GET', 'POST'])]
@@ -29,12 +33,19 @@ class HomeController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            return $this->redirectToRoute('app_home', [], Response::HTTP_SEE_OTHER);
+            $transformations = $this->searchTransformationsQuery->__invoke(
+                $form->get('query')->getData()
+            );
+
+            return $this->render('images/index.html.twig', [
+                'transformations' => $transformations,
+                'searchForm'      => $form->createView(),
+            ]);
         }
 
         return $this->render('images/index.html.twig', [
-            'transformations'     => $this->getTransformationsQuery->getAll(),
-            'searchForm' => $form->createView(),
+            'transformations' => $this->getTransformationsQuery->getAll(),
+            'searchForm'      => $form->createView(),
         ]);
     }
 }

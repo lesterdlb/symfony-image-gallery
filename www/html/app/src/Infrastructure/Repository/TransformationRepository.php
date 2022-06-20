@@ -55,4 +55,17 @@ class TransformationRepository implements TransformationRepositoryInterface
 
         return $query->getResult();
     }
+
+    public function search(array $filter): array
+    {
+        $queryBuilder = $this->repository->createQueryBuilder('T');
+
+        $queryBuilder
+            ->andWhere($queryBuilder->expr()->in('T.id', ':filter'))
+            ->setParameter('filter', $filter);
+
+        $query = $queryBuilder->getQuery()->enableResultCache();
+
+        return $query->getResult();
+    }
 }

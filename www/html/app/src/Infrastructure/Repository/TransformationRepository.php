@@ -9,6 +9,7 @@ use App\Domain\TransformationType;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class TransformationRepository implements TransformationRepositoryInterface
 {
@@ -65,6 +66,18 @@ class TransformationRepository implements TransformationRepositoryInterface
             ->setParameter('filter', $filter);
 
         $query = $queryBuilder->getQuery()->enableResultCache();
+
+        return $query->getResult();
+    }
+
+    public function findAllByImageId(UuidInterface $imageId): array
+    {
+        $queryBuilder = $this->repository
+            ->createQueryBuilder('T', 'T.transformationType')
+            ->where('T.imageId = :imageId')
+            ->setParameter(':imageId', (string)$imageId);
+
+        $query = $queryBuilder->getQuery();
 
         return $query->getResult();
     }

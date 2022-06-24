@@ -24,7 +24,7 @@ final class Transformation extends AggregateRoot
     #[ORM\Column(type: 'string', length: 255)]
     private string $transformationType;
 
-    #[ORM\Column(type: 'date')]
+    #[ORM\Column(type: 'datetime')]
     private \DateTimeInterface $createdAt;
 
     #[ORM\Column(type: 'uuid')]

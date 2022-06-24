@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
-class UploadImageController extends AbstractController
+class ImageUploadController extends AbstractController
 {
     private MessageBusInterface $bus;
     private UploadImageService $uploadImageService;
@@ -26,7 +26,7 @@ class UploadImageController extends AbstractController
         $this->uploadImageService = $uploadImageService;
     }
 
-    #[Route('/upload', name: 'app_upload_image', methods: ['GET', 'POST'])]
+    #[Route('/upload', name: 'app_image_upload', methods: ['GET', 'POST'])]
     public function index(Request $request): Response
     {
         $form = $this->createForm(UploadImageFormType::class);
@@ -51,7 +51,6 @@ class UploadImageController extends AbstractController
         }
 
         return $this->render('images/upload.html.twig', [
-            'imageTransformations' => [],
             'uploadForm'           => $form->createView(),
         ]);
     }

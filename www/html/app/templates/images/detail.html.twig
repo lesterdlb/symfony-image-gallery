@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Image Details{% endblock %}
+
+{% block stylesheets %}
+{% endblock %}
+
+{% block body %}
+    <section class="py-3 text-center container">
+        <div class="row g-5">
+            <div class="col-md-6 col-lg-6">
+                <img src="{{ absolute_url('/uploads/') ~ transformations['ORIGINAL'].imageFilename }}" alt=""
+                     class="img-fluid"/>
+            </div>
+            <div class="col-md-6 col-lg-6">
+                {{ form_start(detailsForm) }}
+                {{ form_row(detailsForm.description) }}
+                {{ form_row(detailsForm.tags) }}
+                {{ form_row(detailsForm.submit) }}
+                {{ form_end(detailsForm) }}
+
+            </div>
+        </div>
+    </section>
+    <hr/>
+    {% if transformations|length > 0 %}
+        <div class="album py-5 bg-light">
+            <div class="container">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                    {% for transformation in transformations %}
+                        <div class="col">
+                            <div class="card shadow-sm">
+                                <img src="{{ absolute_url('/uploads/') ~ transformation.imageFilename }}" alt=""/>
+                                <div class="card-body">
+                                    <h5 class="card-title text-center">{{ transformation.transformationType }}</h5>
+                                    <h5 class="card-title text-center">{{ transformation.createdAt|date('Y-m-d - H:i:s') }}</h5>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <section class="py-3 text-center container">
+            <h1>No transformations :(</h1>
+        </section>
+    {% endif %}
+{% endblock %}

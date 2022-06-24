@@ -18,11 +18,13 @@
         <div class="album py-5 bg-light">
             <div class="container">
                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                    {% for image in transformations %}
+                    {% for transformation in transformations %}
                         <div class="col">
-                            <div class="card shadow-sm">
-                                <img src="{{ absolute_url('/uploads/') ~ image.imageFilename }}" alt=""/>
-                            </div>
+                            <a href="{{ path('app_image_details', { 'id' : transformation.imageId }) }}">
+                                <div class="card shadow-sm">
+                                    <img src="{{ absolute_url('/uploads/') ~ transformation.imageFilename }}" alt=""/>
+                                </div>
+                            </a>
                         </div>
                     {% endfor %}
                 </div>

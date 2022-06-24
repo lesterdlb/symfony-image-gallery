@@ -7,7 +7,7 @@ use App\Domain\Image\Image;
 use App\Domain\Image\ImageRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class ImageRepository implements ImageRepositoryInterface
 {
@@ -30,7 +30,7 @@ class ImageRepository implements ImageRepositoryInterface
         $cache->clear();
     }
 
-    public function getById(Uuid $imageId): Image
+    public function getById(UuidInterface $imageId): Image
     {
         $image = $this->repository->findOneBy([
             'id' => $imageId,

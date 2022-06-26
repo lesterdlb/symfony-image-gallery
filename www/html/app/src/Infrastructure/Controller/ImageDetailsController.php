@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Controller;
 
 use App\Application\Image\Command\CreateImageCommand;
+use App\Application\Image\Command\UpdateImageCommand;
 use App\Application\Image\Query\GetImageByIdQuery;
 use App\Application\Transformation\Query\GetTransformationsByImageIdQuery;
 use App\Domain\TransformationType;
@@ -44,10 +45,14 @@ class ImageDetailsController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $formData = $form->getData();
+            $this->bus->dispatch(
+                new UpdateImageCommand(
+                    $image->Id(),
+                    $image->Tags(),
+                    $image->Description()
+                )
+            );
 
-            //
-            
             $this->addFlash('info', 'Image updated successfully!');
 
             return $this->redirectToRoute('app_home', [], Response::HTTP_SEE_OTHER);
@@ -55,7 +60,7 @@ class ImageDetailsController extends AbstractController
 
         return $this->render('images/detail.html.twig', [
             'transformations' => $transformations,
-            'detailsForm'          => $form->createView(),
+            'detailsForm'     => $form->createView(),
         ]);
     }
 }

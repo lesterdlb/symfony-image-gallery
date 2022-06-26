@@ -68,4 +68,31 @@ final class ElasticsearchRepository implements ElasticsearchInterface
 
         return [];
     }
+
+    public function update(array $transformationIds, string $description, array $tags): void
+    {
+        $query = [
+            'index' => self::INDEX_NAME,
+            'body'  => [
+                'script' => [
+                    'source' => 'ctx._source.description=\''
+                                . $description
+                                . '\';ctx._source.tags=[\''
+                                . implode('\',\'', $tags)
+                                . '\',ctx._source.tags.get(ctx._source.tags.length-1)]'
+                ],
+                'query'  => [
+                    'terms' => [
+                        '_id' => $transformationIds
+                    ]
+                ]
+            ]
+        ];
+
+        try {
+            $this->elasticsearchClient->updateByQuery($query);
+        } catch (ClientResponseException|ServerResponseException|MissingParameterException $ex) {
+            $this->logger->error('ElasticsearchException', ['ex' => $ex->getMessage()]);
+        }
+    }
 }

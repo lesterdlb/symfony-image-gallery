@@ -14,9 +14,9 @@ class GetImageByIdResponse
 
     public function __construct(Image $image)
     {
-        $this->id = (string)$image->Id();
+        $this->id          = (string)$image->Id();
         $this->description = $image->Description();
-        $this->tags = $image->Tags();
+        $this->tags        = $image->Tags();
     }
 
     public function Id(): string
@@ -32,5 +32,20 @@ class GetImageByIdResponse
     public function Tags(): array
     {
         return $this->tags;
+    }
+
+    public function setId(string $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function setDescription(string $description): void
+    {
+        $this->description = $description;
+    }
+
+    public function setTags(array $tags): void
+    {
+        $this->tags = $tags;
     }
 }

@@ -8,7 +8,6 @@ use App\Domain\Transformation\TransformationRepositoryInterface;
 use App\Domain\TransformationType;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
-use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
 class TransformationRepository implements TransformationRepositoryInterface
@@ -32,7 +31,7 @@ class TransformationRepository implements TransformationRepositoryInterface
         $this->entityManager->flush();
     }
 
-    public function getById(Uuid $transformationId): Transformation
+    public function getById(UuidInterface $transformationId): Transformation
     {
         $transformation = $this->repository->findOneBy([
             'id' => $transformationId,

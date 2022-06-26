@@ -46,7 +46,7 @@ class ImageCreatedDomainEventHandler implements MessageHandlerInterface
         $this->elasticsearch->add(
             (string)$baseImage->Id(),
             $event->Description(),
-            $event->Tags()
+            [...$event->Tags(), TransformationType::ORIGINAL->name]
         );
 
         $params = [

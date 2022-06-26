@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\Application\Image\Command;
 
-class CreateImageCommand
+class UpdateImageCommand
 {
     public function __construct(
-        private readonly string $imageFilename,
+        private readonly string $id,
         private readonly array $tags,
         private readonly string $description,
     ) {
     }
 
-    public function ImageFilename(): string
+    public function Id(): string
     {
-        return $this->imageFilename;
+        return $this->id;
     }
 
     public function Tags(): array

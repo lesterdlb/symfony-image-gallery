@@ -47,6 +47,22 @@ final class Image extends AggregateRoot
         return $image;
     }
 
+    public function update(
+        string $description,
+        array $tags,
+    ): void {
+        $this->description = $description;
+        $this->tags        = $tags;
+
+        $this->record(
+            new ImageUpdatedDomainEvent(
+                $this->id,
+                $description,
+                $tags
+            )
+        );
+    }
+
     public function Id(): UuidInterface
     {
         return $this->id;

@@ -10,9 +10,9 @@ use Symfony\Contracts\EventDispatcher\Event;
 final class ImageUpdatedDomainEvent extends Event
 {
     public function __construct(
-        private UuidInterface $imageId,
-        private string $description,
-        private array $tags,
+        private readonly UuidInterface $imageId,
+        private readonly string $description,
+        private readonly array $tags,
     ) {
     }
 

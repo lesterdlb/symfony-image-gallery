@@ -10,10 +10,10 @@ use Symfony\Contracts\EventDispatcher\Event;
 final class ImageCreatedDomainEvent extends Event
 {
     public function __construct(
-        private UuidInterface $imageId,
-        private string $description,
-        private array $tags,
-        private string $imageFilename
+        private readonly UuidInterface $imageId,
+        private readonly string $description,
+        private readonly array $tags,
+        private readonly string $imageFilename
     ) {
     }
 

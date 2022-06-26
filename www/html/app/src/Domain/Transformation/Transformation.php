@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domain\Transformation;
 
-use App\Application\Transformation\RabbitMQ\ThumbnailTransformationMessage;
 use App\Domain\AggregateRoot;
 use App\Domain\TransformationType;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
-use Ramsey\Uuid\Doctrine\UuidGenerator;
 
 #[ORM\Entity]
 final class Transformation extends AggregateRoot

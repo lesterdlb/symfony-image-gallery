@@ -29,6 +29,9 @@ class TransformationRepository implements TransformationRepositoryInterface
 
         $this->entityManager->persist($transformation);
         $this->entityManager->flush();
+
+        $cache = $this->entityManager->getConfiguration()->getResultCache();
+        $cache->clear();
     }
 
     public function getById(UuidInterface $transformationId): Transformation

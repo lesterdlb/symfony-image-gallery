@@ -22,7 +22,7 @@
                         <div class="col">
                             <a href="{{ path('app_image_details', { 'id' : transformation.imageId }) }}">
                                 <div class="card shadow-sm">
-                                    <img src="{{ absolute_url('/uploads/') ~ transformation.imageFilename }}" alt=""/>
+                                    <img src="{{ asset('uploads/' ~ transformation.imageFilename) }}" alt=""/>
                                 </div>
                             </a>
                         </div>

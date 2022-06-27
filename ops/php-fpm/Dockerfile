@@ -12,25 +12,18 @@ RUN echo "alias sf=/appdata/www/bin/console" >> /home/appuser/.bashrc
 
 RUN apt-get update && docker-php-ext-install mysqli pdo pdo_mysql sockets bcmath
 
-RUN pecl install -o -f redis \
+RUN apt-get update \
+    && apt-get install -y \
+            librabbitmq-dev \
+            libssh-dev \
+            libmagickwand-dev --no-install-recommends \
+    && docker-php-ext-install bcmath sockets \
+    && pecl install -o -f redis amqp imagick\
     && rm -rf /tmp/pear \
-    && docker-php-ext-enable redis \
+    && docker-php-ext-enable redis amqp imagick \
     && apt -y install curl git unzip \
     && curl -sS https://getcomposer.org/installer -o composer-setup.php \
     && php composer-setup.php --install-dir=/usr/bin --filename=composer
-
-RUN apt-get update \
-    && apt-get install -y \
-        librabbitmq-dev \
-        libssh-dev \
-        libmagickwand-dev --no-install-recommends \
-    && docker-php-ext-install \
-        bcmath \
-        sockets \
-    && pecl install amqp \
-    && pecl install imagick \
-    && docker-php-ext-enable amqp \
-    && docker-php-ext-enable imagick
 
 RUN version=$(php -r "echo PHP_MAJOR_VERSION.PHP_MINOR_VERSION;") \
     && architecture=$(uname -m) \

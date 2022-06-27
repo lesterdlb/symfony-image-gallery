@@ -17,6 +17,9 @@ start: ## Start the containers
 	docker network create network || true
 	U_ID=${UID} docker-compose up -d
 
+install: ## Install composer dependencies & run migrations
+	U_ID=${UID} docker exec -it --user ${UID} -w /code/app/ ${PHP} bash -c "composer install -n && bin/console d:m:m -n"
+
 stop: ## Stop the containers
 	U_ID=${UID} docker-compose stop
 

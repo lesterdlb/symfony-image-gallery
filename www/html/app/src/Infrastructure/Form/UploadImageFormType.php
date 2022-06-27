@@ -8,6 +8,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Validator\Constraints\Image;
 
 class UploadImageFormType extends AbstractType
 {
@@ -15,7 +16,10 @@ class UploadImageFormType extends AbstractType
     {
         $builder
             ->add('imageFilename', FileType::class, [
-                'label' => 'Image:'
+                'label'       => 'Image:',
+                'constraints' => [
+                    new Image(['maxSize' => '2M'])
+                ]
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'Description:'

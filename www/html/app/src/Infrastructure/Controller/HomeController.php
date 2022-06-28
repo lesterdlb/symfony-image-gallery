@@ -33,18 +33,18 @@ class HomeController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $transformations = $this->searchTransformationsQuery->__invoke(
+            $response = $this->searchTransformationsQuery->__invoke(
                 $form->get('query')->getData()
             );
 
             return $this->render('images/index.html.twig', [
-                'transformations' => $transformations,
+                'transformations' => $response->Transformations(),
                 'searchForm'      => $form->createView(),
             ]);
         }
 
         return $this->render('images/index.html.twig', [
-            'transformations' => $this->getTransformationsQuery->getAll(),
+            'transformations' => $this->getTransformationsQuery->__invoke(),
             'searchForm'      => $form->createView(),
         ]);
     }

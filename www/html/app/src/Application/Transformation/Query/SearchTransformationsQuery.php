@@ -20,10 +20,18 @@ class SearchTransformationsQuery
         $this->elasticsearch            = $elasticsearch;
     }
 
-    public function __invoke(string $query): array
+    public function __invoke(string $query): SearchTransformationsResponse
     {
         $elasticsearchResult = $this->elasticsearch->search($query);
 
-        return $this->transformationRepository->search($elasticsearchResult);
+        if ( ! $elasticsearchResult) {
+            $queryResult = $this->transformationRepository->searchByQuery($query);
+        } else {
+            $queryResult = $this->transformationRepository->search($elasticsearchResult);
+        }
+
+        return new SearchTransformationsResponse(
+            $queryResult
+        );
     }
 }

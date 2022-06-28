@@ -35,12 +35,12 @@ final class ElasticsearchRepository implements ElasticsearchInterface
                     'tags'        => $tags
                 ]
             ]);
-        } catch (ClientResponseException|ServerResponseException|MissingParameterException $ex) {
+        } catch (ClientResponseException|ServerResponseException|MissingParameterException|\Exception $ex) {
             $this->logger->error('ElasticsearchException', ['ex' => $ex->getMessage()]);
         }
     }
 
-    public function search(string $query): array
+    public function search(string $query): array|false
     {
         try {
             $result = $this->elasticsearchClient->search([
@@ -62,11 +62,10 @@ final class ElasticsearchRepository implements ElasticsearchInterface
             }
 
             return $data;
-        } catch (ClientResponseException|ServerResponseException $ex) {
+        } catch (ClientResponseException|ServerResponseException|\Exception $ex) {
             $this->logger->error('ElasticsearchException', ['ex' => $ex->getMessage()]);
+            return false;
         }
-
-        return [];
     }
 
     public function update(array $transformationIds, string $description, array $tags): void
@@ -91,7 +90,7 @@ final class ElasticsearchRepository implements ElasticsearchInterface
 
         try {
             $this->elasticsearchClient->updateByQuery($query);
-        } catch (ClientResponseException|ServerResponseException|MissingParameterException $ex) {
+        } catch (ClientResponseException|ServerResponseException|MissingParameterException|\Exception $ex) {
             $this->logger->error('ElasticsearchException', ['ex' => $ex->getMessage()]);
         }
     }

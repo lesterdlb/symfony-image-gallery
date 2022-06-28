@@ -2,12 +2,12 @@
 
 namespace App\Infrastructure\Repository;
 
-use App\Domain\EntityNotFoundException;
 use App\Domain\Transformation\Transformation;
 use App\Domain\Transformation\TransformationRepositoryInterface;
 use App\Domain\TransformationType;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Ramsey\Uuid\UuidInterface;
 
 class TransformationRepository implements TransformationRepositoryInterface
@@ -34,19 +34,6 @@ class TransformationRepository implements TransformationRepositoryInterface
         $cache->clear();
     }
 
-    public function getById(UuidInterface $transformationId): Transformation
-    {
-        $transformation = $this->repository->findOneBy([
-            'id' => $transformationId,
-        ]);
-
-        if ( ! $transformation instanceof Transformation) {
-            throw EntityNotFoundException::forEntityAndIdentifier('Transformation', (string)$transformationId);
-        }
-
-        return $transformation;
-    }
-
     public function findAll(): array
     {
         $queryBuilder = $this->repository
@@ -55,6 +42,18 @@ class TransformationRepository implements TransformationRepositoryInterface
             ->setParameter(':type', TransformationType::ORIGINAL->name);
 
         $query = $queryBuilder->getQuery()->enableResultCache();
+
+        return $query->getResult();
+    }
+
+    public function findAllByImageId(UuidInterface $imageId): array
+    {
+        $queryBuilder = $this->repository
+            ->createQueryBuilder('T', 'T.transformationType')
+            ->where('T.imageId = :imageId')
+            ->setParameter(':imageId', (string)$imageId);
+
+        $query = $queryBuilder->getQuery();
 
         return $query->getResult();
     }
@@ -72,14 +71,23 @@ class TransformationRepository implements TransformationRepositoryInterface
         return $query->getResult();
     }
 
-    public function findAllByImageId(UuidInterface $imageId): array
+    public function searchByQuery(string $searchTerm): array
     {
-        $queryBuilder = $this->repository
-            ->createQueryBuilder('T', 'T.transformationType')
-            ->where('T.imageId = :imageId')
-            ->setParameter(':imageId', (string)$imageId);
+        $sql = "SELECT t.id, t.image_id as imageId, t.image_filename as imageFilename 
+                FROM image JOIN transformation t on image.id = t.image_id
+                WHERE description LIKE CONCAT('%', :value, '%') 
+                   OR tags LIKE CONCAT('%', :value, '%')
+                   OR :value LIKE CONCAT('%', transformation_type, '%')";
 
-        $query = $queryBuilder->getQuery();
+        $rsm = new ResultSetMapping();
+        $rsm->addEntityResult('App\Domain\Transformation\Transformation', 't');
+        $rsm->addFieldResult('t', 'id', 'id');
+        $rsm->addFieldResult('t', 'imageFilename', 'imageFilename');
+        $rsm->addFieldResult('t', 'imageId', 'imageId');
+
+        $query = $this->entityManager->createNativeQuery($sql, $rsm);
+
+        $query->setParameter('value', $searchTerm);
 
         return $query->getResult();
     }

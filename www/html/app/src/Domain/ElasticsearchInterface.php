@@ -9,4 +9,6 @@ interface ElasticsearchInterface
     public function add(string $transformationId, string $description, array $tags): void;
 
     public function update(array $transformationIds, string $description, array $tags): void;
+
+    public function search(string $query): array|false;
 }

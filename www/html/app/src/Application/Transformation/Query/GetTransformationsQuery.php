@@ -15,7 +15,7 @@ class GetTransformationsQuery
         $this->transformationRepository = $transformationRepository;
     }
 
-    public function getAll(): array
+    public function __invoke(): array
     {
         return $this->transformationRepository->findAll();
     }

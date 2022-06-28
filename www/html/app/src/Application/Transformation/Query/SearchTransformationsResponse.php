@@ -10,7 +10,7 @@ use App\Domain\Transformation\TransformationRepositoryInterface;
 
 class SearchTransformationsResponse
 {
-    private array $transformations;
+    private array $transformations = [];
 
     public function __construct(array $transformations)
     {

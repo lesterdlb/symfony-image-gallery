@@ -46,7 +46,7 @@ uploads-permissions:
 	U_ID=${UID} docker exec -it --user ${UID} ${PHP} chmod o+rwx /code/app/public/uploads
 
 mysql-container:
-	U_ID=${UID} docker exec -it --user ${UID} ${MYSQL} mysql -u root -proot database -h localhost
+	U_ID=${UID} docker exec -it --user ${UID} ${MYSQL} mysql -u user -ppassword db -h localhost
 
 nginx-container:
 	U_ID=${UID} docker exec -it --user ${UID} ${NGINX} /bin/bash

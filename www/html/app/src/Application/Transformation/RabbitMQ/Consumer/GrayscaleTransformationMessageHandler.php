@@ -50,6 +50,8 @@ final class GrayscaleTransformationMessageHandler implements MessageHandlerInter
             [...$message->Tags(), TransformationType::GRAYSCALE->name]
         );
 
+        $this->
+
         print_r('Grayscale message handled!' . PHP_EOL);
     }
 }

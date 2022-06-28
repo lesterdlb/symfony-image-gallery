@@ -53,7 +53,7 @@ class TransformationRepository implements TransformationRepositoryInterface
             ->where('T.imageId = :imageId')
             ->setParameter(':imageId', (string)$imageId);
 
-        $query = $queryBuilder->getQuery();
+        $query = $queryBuilder->getQuery()->enableResultCache();
 
         return $query->getResult();
     }
@@ -86,8 +86,9 @@ class TransformationRepository implements TransformationRepositoryInterface
         $rsm->addFieldResult('t', 'imageId', 'imageId');
 
         $query = $this->entityManager->createNativeQuery($sql, $rsm);
-
         $query->setParameter('value', $searchTerm);
+
+        $query->enableResultCache();
 
         return $query->getResult();
     }

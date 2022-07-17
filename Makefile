@@ -2,10 +2,10 @@
 
 OS = $(shell uname)
 UID = $(shell id -u)
-PHP = practica-final-php
-NGINX = practica-final-nginx
-MYSQL = practica-final-mysql
-REDIS = practica-final-redis
+PHP = image-gallery-php
+NGINX = image-gallery-nginx
+MYSQL = image-gallery-mysql
+REDIS = image-gallery-redis
 
 help: ## Show this help message
 	@echo 'usage: make [target]'
